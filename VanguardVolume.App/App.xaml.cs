@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 
 namespace VanguardVolume.App;
@@ -7,7 +8,6 @@ public partial class App : System.Windows.Application
     private AudioMixerService? _audio;
     private MixerController? _controller;
     private KeyboardHook? _keyboardHook;
-    private MixerFlyout? _flyout;
     private MainWindow? _mainWindow;
     private System.Windows.Forms.NotifyIcon? _trayIcon;
 
@@ -16,7 +16,6 @@ public partial class App : System.Windows.Application
         base.OnStartup(e);
         _audio = new AudioMixerService();
         _controller = new MixerController(_audio);
-        _flyout = new MixerFlyout(_controller);
         _keyboardHook = new KeyboardHook();
         _keyboardHook.KeyPressed += OnGlobalKeyPressed;
         _keyboardHook.Start();
@@ -52,9 +51,15 @@ public partial class App : System.Windows.Application
                 case GlobalKey.VolumeMute: _controller!.ToggleSelectedMute(); break;
             }
 
-            _flyout!.ShowTemporarily();
+            if (key is >= GlobalKey.Macro1 and <= GlobalKey.Macro6)
+            {
+                OpenWindowsVolumeMixer();
+            }
         });
     }
+
+    private static void OpenWindowsVolumeMixer() =>
+        Process.Start(new ProcessStartInfo("ms-settings:apps-volume") { UseShellExecute = true });
 
     private System.Windows.Forms.NotifyIcon CreateTrayIcon()
     {
