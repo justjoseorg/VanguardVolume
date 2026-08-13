@@ -20,32 +20,32 @@ public sealed class AudioMixerService : IDisposable
 
     public IReadOnlyList<MixerTarget> GetApplicationTargets()
     {
-        var device = GetDevice();
         var groups = new Dictionary<string, (string Name, List<SimpleAudioVolume> Volumes)>(StringComparer.OrdinalIgnoreCase);
-
-        var sessions = device.AudioSessionManager.Sessions;
-        for (var index = 0; index < sessions.Count; index++)
+        var devices = _enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
+        foreach (var device in devices)
         {
-            using var session = sessions[index];
-            if (session.State == AudioSessionState.AudioSessionStateExpired)
+            using (device)
             {
-                continue;
-            }
+                var sessions = device.AudioSessionManager.Sessions;
+                for (var index = 0; index < sessions.Count; index++)
+                {
+                    using var session = sessions[index];
+                    if (session.State == AudioSessionState.AudioSessionStateExpired || session.GetProcessID == 0)
+                    {
+                        continue;
+                    }
 
-            if (session.GetProcessID == 0)
-            {
-                continue;
-            }
+                    var id = GetApplicationId(session, out var name);
+                    if (!groups.TryGetValue(id, out var group))
+                    {
+                        group = (name, []);
+                        groups.Add(id, group);
+                    }
 
-            var id = GetApplicationId(session, out var name);
-            if (!groups.TryGetValue(id, out var group))
-            {
-                group = (name, []);
-                groups.Add(id, group);
+                    group.Volumes.Add(session.SimpleAudioVolume);
+                    groups[id] = group;
+                }
             }
-
-            group.Volumes.Add(session.SimpleAudioVolume);
-            groups[id] = group;
         }
 
         _volumesById = groups.ToDictionary(pair => pair.Key, pair => pair.Value.Volumes, StringComparer.OrdinalIgnoreCase);

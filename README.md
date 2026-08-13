@@ -8,6 +8,7 @@ Vanguard Volume is a Windows background companion for the Corsair VANGUARD 96. I
 
 - **G1** controls the default output's master volume.
 - **G2-G6** receive stable assignments to up to five active or recently inactive shared-mode audio applications.
+- Sessions are collected across every active output device, so applications assigned to a dedicated headset or USB DAC remain available.
 - The dial adjusts the selected target; pressing it toggles mute.
 - Macro selection shows a custom non-activating mixer overlay in the bottom-right corner of the primary display.
 - Bind each physical G key to a unique **F13-F24** key, then configure the same bindings in the app.
