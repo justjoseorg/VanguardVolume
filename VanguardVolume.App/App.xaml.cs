@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace VanguardVolume.App;
 
@@ -58,19 +59,25 @@ public partial class App : System.Windows.Application
         });
     }
 
-    private static void OpenWindowsVolumeMixer()
+    private void OpenWindowsVolumeMixer()
     {
         const byte vkControl = 0x11;
         const byte vkLeftWindows = 0x5B;
         const byte vkV = 0x56;
-        const uint keyUp = 0x0002;
 
-        keybd_event(vkLeftWindows, 0, 0, 0);
-        keybd_event(vkControl, 0, 0, 0);
-        keybd_event(vkV, 0, 0, 0);
-        keybd_event(vkV, 0, keyUp, 0);
-        keybd_event(vkControl, 0, keyUp, 0);
-        keybd_event(vkLeftWindows, 0, keyUp, 0);
+        KeyDown(vkLeftWindows);
+        KeyDown(vkControl);
+        PressKey(vkV);
+        KeyUp(vkControl);
+        KeyUp(vkLeftWindows);
+
+        var scrollTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+        scrollTimer.Tick += (_, _) =>
+        {
+            scrollTimer.Stop();
+            PressKey(0x22); // VK_NEXT scrolls the newly opened flyout to app volume controls.
+        };
+        scrollTimer.Start();
     }
 
     private System.Windows.Forms.NotifyIcon CreateTrayIcon()
@@ -91,4 +98,13 @@ public partial class App : System.Windows.Application
 
     [DllImport("user32.dll")]
     private static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, nuint extraInfo);
+
+    private static void PressKey(byte virtualKey)
+    {
+        KeyDown(virtualKey);
+        KeyUp(virtualKey);
+    }
+
+    private static void KeyDown(byte virtualKey) => keybd_event(virtualKey, 0, 0, 0);
+    private static void KeyUp(byte virtualKey) => keybd_event(virtualKey, 0, 0x0002, 0);
 }
