@@ -12,15 +12,30 @@ public sealed class KeyboardHook : IDisposable
     private const int WhKeyboardLl = 13;
     private const int WmKeyDown = 0x0100;
     private const int WmSysKeyDown = 0x0104;
-    private const uint VkF13 = 0x7C;
     private const uint VkVolumeMute = 0xAD;
     private const uint VkVolumeDown = 0xAE;
     private const uint VkVolumeUp = 0xAF;
     private readonly HookProc _callback;
+    private readonly object _mappingLock = new();
+    private Dictionary<uint, GlobalKey> _macroKeys = [];
     private nint _hook;
 
-    public KeyboardHook() => _callback = HookCallback;
+    public KeyboardHook(IReadOnlyDictionary<int, uint> macroKeys)
+    {
+        _callback = HookCallback;
+        UpdateMacroKeys(macroKeys);
+    }
+
     public event EventHandler<GlobalKey>? KeyPressed;
+
+    public void UpdateMacroKeys(IReadOnlyDictionary<int, uint> macroKeys)
+    {
+        var updatedKeys = macroKeys.ToDictionary(pair => pair.Value, pair => (GlobalKey)(pair.Key - 1));
+        lock (_mappingLock)
+        {
+            _macroKeys = updatedKeys;
+        }
+    }
 
     public void Start()
     {
@@ -60,18 +75,24 @@ public sealed class KeyboardHook : IDisposable
         return CallNextHookEx(_hook, code, wParam, lParam);
     }
 
-    private static bool TryMapKey(uint virtualKey, out GlobalKey key)
+    private bool TryMapKey(uint virtualKey, out GlobalKey key)
     {
+        lock (_mappingLock)
+        {
+            if (_macroKeys.TryGetValue(virtualKey, out key))
+            {
+                return true;
+            }
+        }
+
         key = virtualKey switch
         {
-            >= VkF13 and <= VkF13 + 5 => (GlobalKey)(virtualKey - VkF13),
             VkVolumeUp => GlobalKey.VolumeUp,
             VkVolumeDown => GlobalKey.VolumeDown,
             VkVolumeMute => GlobalKey.VolumeMute,
             _ => default
         };
-
-        return virtualKey is >= VkF13 and <= VkF13 + 5 or VkVolumeUp or VkVolumeDown or VkVolumeMute;
+        return virtualKey is VkVolumeUp or VkVolumeDown or VkVolumeMute;
     }
 
     private delegate nint HookProc(int code, nint wParam, nint lParam);

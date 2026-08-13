@@ -9,6 +9,7 @@ public partial class App : System.Windows.Application
     private AudioMixerService? _audio;
     private MixerController? _controller;
     private KeyboardHook? _keyboardHook;
+    private KeyBindingSettings? _keyBindingSettings;
     private MainWindow? _mainWindow;
     private System.Windows.Forms.NotifyIcon? _trayIcon;
 
@@ -18,11 +19,12 @@ public partial class App : System.Windows.Application
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         _audio = new AudioMixerService();
         _controller = new MixerController(_audio);
-        _keyboardHook = new KeyboardHook();
+        _keyBindingSettings = KeyBindingSettings.Load();
+        _keyboardHook = new KeyboardHook(_keyBindingSettings.MacroKeys);
         _keyboardHook.KeyPressed += OnGlobalKeyPressed;
         _keyboardHook.Start();
 
-        _mainWindow = new MainWindow(_controller);
+        _mainWindow = new MainWindow(_controller, _keyBindingSettings, ApplyMacroKeyMappings);
         MainWindow = _mainWindow;
         _trayIcon = CreateTrayIcon();
         _controller.Refresh();
@@ -58,6 +60,13 @@ public partial class App : System.Windows.Application
                 OpenWindowsVolumeMixer();
             }
         });
+    }
+
+    private void ApplyMacroKeyMappings(IReadOnlyDictionary<int, uint> macroKeys)
+    {
+        _keyBindingSettings!.Update(macroKeys);
+        _keyBindingSettings.Save();
+        _keyboardHook!.UpdateMacroKeys(_keyBindingSettings.MacroKeys);
     }
 
     private void OpenWindowsVolumeMixer()

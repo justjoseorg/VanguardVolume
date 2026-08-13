@@ -22,4 +22,18 @@ public class StableAssignmentStoreTests
         Assert.Equal(first.Single(target => target.Id == "b").Slot, refreshed.Single(target => target.Id == "b").Slot);
         Assert.Equal(4, refreshed.Single(target => target.Id == "c").Slot);
     }
+
+    public class KeyBindingSettingsTests
+    {
+        [Fact]
+        public void RejectsDuplicateMacroKeys()
+        {
+            var settings = new KeyBindingSettings();
+
+            Assert.Throws<InvalidDataException>(() => settings.Update(new Dictionary<int, uint>
+            {
+                [1] = 0x7C, [2] = 0x7C, [3] = 0x7E, [4] = 0x7F, [5] = 0x80, [6] = 0x81
+            }));
+        }
+    }
 }

@@ -5,12 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VanguardVolume.App"
         mc:Ignorable="d"
-        Title="Vanguard Volume" Height="260" Width="480"
+        Title="Vanguard Volume" Height="520" Width="480"
         WindowStartupLocation="CenterScreen">
     <StackPanel Margin="24">
         <TextBlock FontSize="22" FontWeight="SemiBold" Text="Vanguard Volume"/>
         <TextBlock Margin="0,12,0,0" TextWrapping="Wrap"
-                   Text="Map the VANGUARD 96 G1-G6 keys in iCUE/Web Hub to F13-F18. The volume dial controls the selected row; press the dial to mute."/>
+                   Text="Map the VANGUARD 96 G1-G6 keys in iCUE/Web Hub to the bindings below. The volume dial controls the selected row; press the dial to mute."/>
+        <TextBlock Margin="0,16,0,6" FontWeight="SemiBold" Text="Macro-key bindings"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="G1" VerticalAlignment="Center"/><ComboBox x:Name="Macro1Key" Grid.Row="0" Grid.Column="1" Margin="12,2,0,2"/>
+            <TextBlock Grid.Row="1" Text="G2" VerticalAlignment="Center"/><ComboBox x:Name="Macro2Key" Grid.Row="1" Grid.Column="1" Margin="12,2,0,2"/>
+            <TextBlock Grid.Row="2" Text="G3" VerticalAlignment="Center"/><ComboBox x:Name="Macro3Key" Grid.Row="2" Grid.Column="1" Margin="12,2,0,2"/>
+            <TextBlock Grid.Row="3" Text="G4" VerticalAlignment="Center"/><ComboBox x:Name="Macro4Key" Grid.Row="3" Grid.Column="1" Margin="12,2,0,2"/>
+            <TextBlock Grid.Row="4" Text="G5" VerticalAlignment="Center"/><ComboBox x:Name="Macro5Key" Grid.Row="4" Grid.Column="1" Margin="12,2,0,2"/>
+            <TextBlock Grid.Row="5" Text="G6" VerticalAlignment="Center"/><ComboBox x:Name="Macro6Key" Grid.Row="5" Grid.Column="1" Margin="12,2,0,2"/>
+        </Grid>
+        <Button Margin="0,8,0,0" HorizontalAlignment="Left" Padding="12,4" Click="SaveMacroKeys_Click" Content="Save bindings"/>
+        <TextBlock x:Name="BindingStatusText" Margin="0,4,0,0" Foreground="ForestGreen"/>
         <TextBlock Margin="0,16,0,0" FontWeight="SemiBold" Text="Current mapping"/>
         <TextBlock x:Name="MappingText" Margin="0,6,0,0" FontFamily="Consolas" TextWrapping="Wrap"/>
         <TextBlock Margin="0,16,0,0" Foreground="DimGray" Text="The service remains active when this window is minimized."/>

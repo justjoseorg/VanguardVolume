@@ -16,6 +16,10 @@ dotnet run --project .\VanguardVolume.App
 
 Leave the app running in the notification area. Use its menu to refresh sessions, show the mapping window, or exit.
 
+## Configure macro bindings
+
+Open **Show mapping** from the notification-area icon, then select unique F13-F24 bindings for G1-G6 and choose **Save bindings**. Configure the same keys on the physical macro keys in iCUE or Corsair Web Hub. Bindings are saved in `%LOCALAPPDATA%\VanguardVolume\settings.json` and apply immediately.
+
 ## Known hardware constraint
 
 The first version suppresses all standard Windows volume media events while it is running, because a low-level hook cannot yet identify the originating keyboard reliably. Map the VANGUARD's dial to the normal media volume events. Future hardware work can use Raw Input to limit suppression to the keyboard.
