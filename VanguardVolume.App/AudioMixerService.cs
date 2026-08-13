@@ -32,6 +32,11 @@ public sealed class AudioMixerService : IDisposable
                 continue;
             }
 
+            if (session.GetProcessID == 0)
+            {
+                continue;
+            }
+
             var id = GetApplicationId(session, out var name);
             if (!groups.TryGetValue(id, out var group))
             {

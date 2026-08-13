@@ -77,11 +77,25 @@ public sealed class MixerFlyout : Window
                 Padding = new Thickness(10, 7, 10, 7),
                 CornerRadius = new CornerRadius(3),
                 Background = new SolidColorBrush(selected ? Color.FromRgb(0, 112, 160) : Color.FromRgb(48, 54, 67)),
-                Child = new TextBlock
+                Child = new DockPanel
                 {
-                    Foreground = Brushes.White,
-                    FontFamily = new FontFamily("Consolas"),
-                    Text = $"G{target.Slot}  {target.Name,-22} {(target.IsMuted ? "MUTE" : $"{target.VolumePercent}%")}"
+                    Children =
+                    {
+                        new Image
+                        {
+                            Source = ApplicationIconResolver.GetIcon(target),
+                            Width = 24,
+                            Height = 24,
+                            Margin = new Thickness(0, 0, 9, 0)
+                        },
+                        new TextBlock
+                        {
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Foreground = Brushes.White,
+                            FontFamily = new FontFamily("Consolas"),
+                            Text = $"G{target.Slot}  {target.Name,-20} {(target.IsMuted ? "MUTE" : $"{target.VolumePercent}%")}"
+                        }
+                    }
                 }
             });
         }
