@@ -1,11 +1,15 @@
 #define MyAppName "Vanguard Volume"
-#define MyAppVersion "0.1.0"
+#ifndef MyAppVersion
+  #define MyAppVersion "0.1.0"
+#endif
 #define MyAppExeName "VanguardVolume.App.exe"
 
 [Setup]
 AppId={{7D1D405A-BC25-49F5-9D3A-9CAB8FEC78C6}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+SetupIconFile=..\VanguardVolume.App\Assets\vanguard-volume.ico
+UninstallDisplayIcon={app}\{#MyAppExeName}
 DefaultDirName={localappdata}\Programs\VanguardVolume
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes

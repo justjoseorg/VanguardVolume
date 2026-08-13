@@ -1,3 +1,4 @@
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
@@ -106,7 +107,7 @@ public partial class App : System.Windows.Application
 
         return new System.Windows.Forms.NotifyIcon
         {
-            Icon = System.Drawing.SystemIcons.Application,
+            Icon = new System.Drawing.Icon(Path.Combine(AppContext.BaseDirectory, "Assets", "vanguard-volume.ico")),
             Text = "Vanguard Volume",
             Visible = true,
             ContextMenuStrip = menu

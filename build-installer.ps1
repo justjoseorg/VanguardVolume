@@ -1,5 +1,6 @@
 param(
-    [string]$Configuration = "Release"
+    [string]$Configuration = "Release",
+    [string]$Version = "0.1.0"
 )
 
 $ErrorActionPreference = "Stop"
@@ -25,6 +26,7 @@ dotnet publish "$repositoryRoot\VanguardVolume.App\VanguardVolume.App.csproj" `
     --self-contained true `
     -p:PublishSingleFile=true `
     -p:PublishTrimmed=false `
+    -p:Version=$Version `
     --output $publishDirectory
 
-& $isccPath "$repositoryRoot\installer\VanguardVolume.Setup.iss"
+& $isccPath "/DMyAppVersion=$Version" "$repositoryRoot\installer\VanguardVolume.Setup.iss"
