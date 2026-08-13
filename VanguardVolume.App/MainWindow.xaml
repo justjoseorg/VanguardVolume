@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VanguardVolume.App"
         mc:Ignorable="d"
-        Title="Vanguard Volume" Height="720" Width="480"
+        Title="Vanguard Volume" Height="650" Width="520"
+        MinHeight="420" MinWidth="440"
+        ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
     <StackPanel Margin="24">
         <TextBlock FontSize="22" FontWeight="SemiBold" Text="Vanguard Volume"/>
         <TextBlock Margin="0,12,0,0" TextWrapping="Wrap"
@@ -45,4 +48,5 @@
                 Content="Allow selected application"/>
         <TextBlock Margin="0,12,0,0" Foreground="DimGray" Text="The service remains active when this window is closed."/>
     </StackPanel>
+    </ScrollViewer>
 </Window>
