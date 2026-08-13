@@ -16,6 +16,7 @@ public sealed class KeyboardHook : IDisposable
     private const uint VkVolumeDown = 0xAE;
     private const uint VkVolumeUp = 0xAF;
     private readonly HookProc _callback;
+    private readonly MuteDebouncer _muteDebouncer = new(TimeSpan.FromMilliseconds(350));
     private readonly object _mappingLock = new();
     private Dictionary<uint, GlobalKey> _macroKeys = [];
     private nint _hook;
@@ -67,6 +68,11 @@ public sealed class KeyboardHook : IDisposable
             var virtualKey = (uint)Marshal.ReadInt32(lParam);
             if (TryMapKey(virtualKey, out var key))
             {
+                if (key == GlobalKey.VolumeMute && !_muteDebouncer.TryAccept())
+                {
+                    return 1;
+                }
+
                 KeyPressed?.Invoke(this, key);
                 return 1;
             }

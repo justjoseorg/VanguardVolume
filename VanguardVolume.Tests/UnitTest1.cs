@@ -54,6 +54,22 @@ public class StableAssignmentStoreTests
                 Assert.Equal("c", assignments.Single(target => target.Slot == 2).Id);
                 Assert.Equal("a", assignments.Single(target => target.Slot == 3).Id);
             }
+
+            public class MuteDebouncerTests
+            {
+                [Fact]
+                public void SuppressesRepeatedMuteEventsWithinTheDebounceInterval()
+                {
+                    long timestamp = 0;
+                    var debouncer = new MuteDebouncer(TimeSpan.FromMilliseconds(350), () => timestamp);
+
+                    Assert.True(debouncer.TryAccept());
+                    timestamp += (long)(System.Diagnostics.Stopwatch.Frequency * 0.2);
+                    Assert.False(debouncer.TryAccept());
+                    timestamp += (long)(System.Diagnostics.Stopwatch.Frequency * 0.2);
+                    Assert.True(debouncer.TryAccept());
+                }
+            }
         }
     }
 }
