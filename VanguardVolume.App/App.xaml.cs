@@ -18,6 +18,7 @@ public partial class App : System.Windows.Application
         _audio = new AudioMixerService();
         _controller = new MixerController(_audio);
         _keyBindingSettings = KeyBindingSettings.Load();
+        _controller.SetBannedApplicationIds(_keyBindingSettings.BannedApplicationIds);
         _keyboardHook = new KeyboardHook(_keyBindingSettings.MacroKeys);
         _keyboardHook.KeyPressed += OnGlobalKeyPressed;
         _keyboardHook.Start();
@@ -25,7 +26,12 @@ public partial class App : System.Windows.Application
         _flyout = new MixerFlyout(_controller);
         if (e.Args.Contains("--settings", StringComparer.OrdinalIgnoreCase))
         {
-            _mainWindow = new MainWindow(_controller, _keyBindingSettings, ApplyMacroKeyMappings, ApplyStartWithWindows);
+            _mainWindow = new MainWindow(
+                _controller,
+                _keyBindingSettings,
+                ApplyMacroKeyMappings,
+                ApplyStartWithWindows,
+                ApplyBannedApplicationIds);
             MainWindow = _mainWindow;
             _mainWindow.Show();
         }
@@ -77,6 +83,13 @@ public partial class App : System.Windows.Application
         AutostartService.SetEnabled(enabled);
         _keyBindingSettings!.StartWithWindows = enabled;
         _keyBindingSettings.Save();
+    }
+
+    private void ApplyBannedApplicationIds(IReadOnlyCollection<string> applicationIds)
+    {
+        _keyBindingSettings!.BannedApplicationIds = new HashSet<string>(applicationIds, StringComparer.OrdinalIgnoreCase);
+        _keyBindingSettings.Save();
+        _controller!.SetBannedApplicationIds(_keyBindingSettings.BannedApplicationIds);
     }
 
 }

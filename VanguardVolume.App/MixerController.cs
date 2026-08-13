@@ -4,6 +4,7 @@ public sealed class MixerController
 {
     private readonly AudioMixerService _audio;
     private readonly StableAssignmentStore _assignmentStore = new();
+    private HashSet<string> _bannedApplicationIds = new(StringComparer.OrdinalIgnoreCase);
     private List<MixerTarget> _assignments = [];
     private int _selectedSlot = 1;
 
@@ -16,13 +17,22 @@ public sealed class MixerController
     public void Refresh()
     {
         var master = _audio.GetMasterTarget() with { Slot = 1 };
-        _assignments = [master, .. _assignmentStore.Assign(_audio.GetApplicationTargets())];
+        var applications = _audio.GetApplicationTargets()
+            .Where(target => !_bannedApplicationIds.Contains(target.Id))
+            .ToList();
+        _assignments = [master, .. _assignmentStore.Assign(applications)];
         if (!_assignments.Any(target => target.Slot == _selectedSlot))
         {
             _selectedSlot = 1;
         }
 
         StateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void SetBannedApplicationIds(IEnumerable<string> applicationIds)
+    {
+        _bannedApplicationIds = new HashSet<string>(applicationIds, StringComparer.OrdinalIgnoreCase);
+        Refresh();
     }
 
     public void SelectSlot(int slot)

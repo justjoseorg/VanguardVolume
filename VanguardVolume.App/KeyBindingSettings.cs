@@ -14,6 +14,7 @@ public sealed class KeyBindingSettings
 
     public Dictionary<int, uint> MacroKeys { get; set; } = CreateDefaultMappings();
     public bool StartWithWindows { get; set; }
+    public HashSet<string> BannedApplicationIds { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public static IReadOnlyList<MacroKeyOption> SupportedKeys { get; } =
         Enumerable.Range((int)FirstSupportedKey, (int)(LastSupportedKey - FirstSupportedKey + 1))

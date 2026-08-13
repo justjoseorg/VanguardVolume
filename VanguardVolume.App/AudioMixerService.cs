@@ -27,7 +27,7 @@ public sealed class AudioMixerService : IDisposable
         for (var index = 0; index < sessions.Count; index++)
         {
             using var session = sessions[index];
-            if (session.State != AudioSessionState.AudioSessionStateActive)
+            if (session.State == AudioSessionState.AudioSessionStateExpired)
             {
                 continue;
             }

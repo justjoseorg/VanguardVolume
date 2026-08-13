@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VanguardVolume.App"
         mc:Ignorable="d"
-        Title="Vanguard Volume" Height="555" Width="480"
+        Title="Vanguard Volume" Height="720" Width="480"
         WindowStartupLocation="CenterScreen">
     <StackPanel Margin="24">
         <TextBlock FontSize="22" FontWeight="SemiBold" Text="Vanguard Volume"/>
@@ -33,6 +33,16 @@
         <TextBlock x:Name="BindingStatusText" Margin="0,4,0,0" Foreground="ForestGreen"/>
         <TextBlock Margin="0,16,0,0" FontWeight="SemiBold" Text="Current mapping"/>
         <TextBlock x:Name="MappingText" Margin="0,6,0,0" FontFamily="Consolas" TextWrapping="Wrap"/>
-        <TextBlock Margin="0,16,0,0" Foreground="DimGray" Text="The service remains active when this window is minimized."/>
+        <TextBlock Margin="0,16,0,6" FontWeight="SemiBold" Text="Application exclusions"/>
+        <TextBlock Foreground="DimGray" TextWrapping="Wrap"
+                   Text="Select an assigned application to exclude it from future macro-key assignments."/>
+        <ListBox x:Name="AssignedApplicationList" Height="82" Margin="0,6,0,0" DisplayMemberPath="Name"/>
+        <Button Margin="0,6,0,0" HorizontalAlignment="Left" Padding="12,4" Click="BanSelectedApplication_Click"
+                Content="Ban selected application"/>
+        <TextBlock Margin="0,10,0,0" Foreground="DimGray" Text="Excluded applications"/>
+        <ListBox x:Name="BannedApplicationList" Height="62" Margin="0,4,0,0" DisplayMemberPath="DisplayName"/>
+        <Button Margin="0,6,0,0" HorizontalAlignment="Left" Padding="12,4" Click="AllowSelectedApplication_Click"
+                Content="Allow selected application"/>
+        <TextBlock Margin="0,12,0,0" Foreground="DimGray" Text="The service remains active when this window is closed."/>
     </StackPanel>
 </Window>

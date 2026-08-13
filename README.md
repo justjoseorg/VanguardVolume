@@ -7,7 +7,7 @@ Vanguard Volume is a Windows background companion for the Corsair VANGUARD 96. I
 ## Features
 
 - **G1** controls the default output's master volume.
-- **G2-G6** receive stable assignments to up to five active shared-mode audio applications.
+- **G2-G6** receive stable assignments to up to five active or recently inactive shared-mode audio applications.
 - The dial adjusts the selected target; pressing it toggles mute.
 - Macro selection shows a custom non-activating mixer overlay in the bottom-right corner of the primary display.
 - Bind each physical G key to a unique **F13-F24** key, then configure the same bindings in the app.
@@ -32,6 +32,7 @@ The resulting installer is `artifacts\installer\VanguardVolume-Setup.exe`.
 2. Select a unique F13-F24 binding for every G1-G6 key and choose **Save bindings**.
 3. Assign those same function keys to the physical macro keys in iCUE or Corsair Web Hub.
 4. Enable **Start Vanguard Volume automatically when I sign in** if it should survive reboots.
+5. Use **Ban selected application** to prevent an assigned app from being offered to macro keys. Use **Allow selected application** to restore it later.
 
 Settings are stored at `%LOCALAPPDATA%\VanguardVolume\settings.json` and apply immediately.
 
