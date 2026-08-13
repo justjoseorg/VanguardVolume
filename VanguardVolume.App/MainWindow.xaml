@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VanguardVolume.App"
         mc:Ignorable="d"
-        Title="Vanguard Volume" Height="650" Width="520"
+        Title="Vanguard Volume" Height="720" Width="520"
         MinHeight="420" MinWidth="440"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterScreen">
@@ -46,6 +46,18 @@
         <ListBox x:Name="BannedApplicationList" Height="62" Margin="0,4,0,0" DisplayMemberPath="DisplayName"/>
         <Button Margin="0,6,0,0" HorizontalAlignment="Left" Padding="12,4" Click="AllowSelectedApplication_Click"
                 Content="Allow selected application"/>
+        <TextBlock Margin="0,16,0,6" FontWeight="SemiBold" Text="Assignment priority"/>
+        <TextBlock Foreground="DimGray" TextWrapping="Wrap"
+                   Text="Priority applications claim G2-G6 first, in the order shown. Unprioritized applications fill remaining slots."/>
+        <ListBox x:Name="AvailableApplicationList" Height="82" Margin="0,6,0,0" DisplayMemberPath="Name"/>
+        <Button Margin="0,6,0,0" HorizontalAlignment="Left" Padding="12,4" Click="PrioritizeSelectedApplication_Click"
+                Content="Prioritize selected application"/>
+        <ListBox x:Name="PriorityApplicationList" Height="82" Margin="0,10,0,0" DisplayMemberPath="DisplayName"/>
+        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+            <Button Padding="12,4" Click="MovePriorityUp_Click" Content="Move up"/>
+            <Button Margin="6,0,0,0" Padding="12,4" Click="MovePriorityDown_Click" Content="Move down"/>
+            <Button Margin="6,0,0,0" Padding="12,4" Click="RemovePriority_Click" Content="Remove priority"/>
+        </StackPanel>
         <TextBlock Margin="0,12,0,0" Foreground="DimGray" Text="The service remains active when this window is closed."/>
     </StackPanel>
     </ScrollViewer>

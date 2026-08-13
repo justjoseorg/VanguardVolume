@@ -21,6 +21,7 @@ public partial class App : System.Windows.Application
         _controller = new MixerController(_audio);
         _keyBindingSettings = KeyBindingSettings.Load();
         _controller.SetBannedApplicationIds(_keyBindingSettings.BannedApplicationIds);
+        _controller.SetPriorityApplicationIds(_keyBindingSettings.PriorityApplicationIds);
         _keyboardHook = new KeyboardHook(_keyBindingSettings.MacroKeys);
         _keyboardHook.KeyPressed += OnGlobalKeyPressed;
         _keyboardHook.Start();
@@ -89,6 +90,13 @@ public partial class App : System.Windows.Application
         _controller!.SetBannedApplicationIds(_keyBindingSettings.BannedApplicationIds);
     }
 
+    private void ApplyPriorityApplicationIds(IReadOnlyList<string> applicationIds)
+    {
+        _keyBindingSettings!.PriorityApplicationIds = applicationIds.ToList();
+        _keyBindingSettings.Save();
+        _controller!.SetPriorityApplicationIds(_keyBindingSettings.PriorityApplicationIds);
+    }
+
     private void ShowSettings()
     {
         if (_mainWindow is null)
@@ -98,7 +106,8 @@ public partial class App : System.Windows.Application
                 _keyBindingSettings!,
                 ApplyMacroKeyMappings,
                 ApplyStartWithWindows,
-                ApplyBannedApplicationIds);
+                ApplyBannedApplicationIds,
+                ApplyPriorityApplicationIds);
             _mainWindow.Closed += (_, _) =>
             {
                 _mainWindow = null;

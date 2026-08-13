@@ -5,22 +5,25 @@ public sealed class MixerController
     private readonly AudioMixerService _audio;
     private readonly StableAssignmentStore _assignmentStore = new();
     private HashSet<string> _bannedApplicationIds = new(StringComparer.OrdinalIgnoreCase);
+    private List<string> _priorityApplicationIds = [];
     private List<MixerTarget> _assignments = [];
+    private List<MixerTarget> _availableApplications = [];
     private int _selectedSlot = 1;
 
     public MixerController(AudioMixerService audio) => _audio = audio;
 
     public event EventHandler? StateChanged;
     public IReadOnlyList<MixerTarget> Assignments => _assignments;
+    public IReadOnlyList<MixerTarget> AvailableApplications => _availableApplications;
     public int SelectedSlot => _selectedSlot;
 
     public void Refresh()
     {
         var master = _audio.GetMasterTarget() with { Slot = 1 };
-        var applications = _audio.GetApplicationTargets()
+        _availableApplications = _audio.GetApplicationTargets()
             .Where(target => !_bannedApplicationIds.Contains(target.Id))
             .ToList();
-        _assignments = [master, .. _assignmentStore.Assign(applications)];
+        _assignments = [master, .. _assignmentStore.Assign(_availableApplications, _priorityApplicationIds)];
         if (!_assignments.Any(target => target.Slot == _selectedSlot))
         {
             _selectedSlot = 1;
@@ -32,6 +35,14 @@ public sealed class MixerController
     public void SetBannedApplicationIds(IEnumerable<string> applicationIds)
     {
         _bannedApplicationIds = new HashSet<string>(applicationIds, StringComparer.OrdinalIgnoreCase);
+        Refresh();
+    }
+
+    public void SetPriorityApplicationIds(IEnumerable<string> applicationIds)
+    {
+        _priorityApplicationIds = applicationIds
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
         Refresh();
     }
 

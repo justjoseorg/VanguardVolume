@@ -11,6 +11,7 @@ public partial class MainWindow : Window
     private readonly Action<IReadOnlyDictionary<int, uint>> _applyMacroKeyMappings;
     private readonly Action<bool> _applyStartWithWindows;
     private readonly Action<IReadOnlyCollection<string>> _applyBannedApplicationIds;
+    private readonly Action<IReadOnlyList<string>> _applyPriorityApplicationIds;
     private readonly WpfComboBox[] _macroKeyBoxes;
 
     public MainWindow(
@@ -18,7 +19,8 @@ public partial class MainWindow : Window
         KeyBindingSettings keyBindingSettings,
         Action<IReadOnlyDictionary<int, uint>> applyMacroKeyMappings,
         Action<bool> applyStartWithWindows,
-        Action<IReadOnlyCollection<string>> applyBannedApplicationIds)
+        Action<IReadOnlyCollection<string>> applyBannedApplicationIds,
+        Action<IReadOnlyList<string>> applyPriorityApplicationIds)
     {
         InitializeComponent();
         _controller = controller;
@@ -26,6 +28,7 @@ public partial class MainWindow : Window
         _applyMacroKeyMappings = applyMacroKeyMappings;
         _applyStartWithWindows = applyStartWithWindows;
         _applyBannedApplicationIds = applyBannedApplicationIds;
+        _applyPriorityApplicationIds = applyPriorityApplicationIds;
         _macroKeyBoxes = [Macro1Key, Macro2Key, Macro3Key, Macro4Key, Macro5Key, Macro6Key];
         for (var slot = 1; slot <= _macroKeyBoxes.Length; slot++)
         {
@@ -50,6 +53,10 @@ public partial class MainWindow : Window
         AssignedApplicationList.ItemsSource = _controller.Assignments.Where(target => !target.IsMaster).ToList();
         BannedApplicationList.ItemsSource = _keyBindingSettings.BannedApplicationIds
             .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
+            .Select(id => new BannedApplication(id, FormatApplicationName(id)))
+            .ToList();
+        AvailableApplicationList.ItemsSource = _controller.AvailableApplications;
+        PriorityApplicationList.ItemsSource = _keyBindingSettings.PriorityApplicationIds
             .Select(id => new BannedApplication(id, FormatApplicationName(id)))
             .ToList();
     }
@@ -126,6 +133,61 @@ public partial class MainWindow : Window
         _applyBannedApplicationIds(banned);
         BindingStatusText.Foreground = System.Windows.Media.Brushes.ForestGreen;
         BindingStatusText.Text = $"{application.DisplayName} can be assigned again.";
+    }
+
+    private void PrioritizeSelectedApplication_Click(object sender, RoutedEventArgs e)
+    {
+        if (AvailableApplicationList.SelectedItem is not MixerTarget target)
+        {
+            return;
+        }
+
+        var priorities = _keyBindingSettings.PriorityApplicationIds
+            .Where(id => !string.Equals(id, target.Id, StringComparison.OrdinalIgnoreCase))
+            .Append(target.Id)
+            .ToList();
+        SavePriorities(priorities);
+    }
+
+    private void MovePriorityUp_Click(object sender, RoutedEventArgs e) => MovePriority(-1);
+    private void MovePriorityDown_Click(object sender, RoutedEventArgs e) => MovePriority(1);
+
+    private void MovePriority(int direction)
+    {
+        if (PriorityApplicationList.SelectedItem is not BannedApplication application)
+        {
+            return;
+        }
+
+        var priorities = _keyBindingSettings.PriorityApplicationIds.ToList();
+        var index = priorities.FindIndex(id => string.Equals(id, application.Id, StringComparison.OrdinalIgnoreCase));
+        var destination = index + direction;
+        if (index < 0 || destination < 0 || destination >= priorities.Count)
+        {
+            return;
+        }
+
+        (priorities[index], priorities[destination]) = (priorities[destination], priorities[index]);
+        SavePriorities(priorities);
+    }
+
+    private void RemovePriority_Click(object sender, RoutedEventArgs e)
+    {
+        if (PriorityApplicationList.SelectedItem is not BannedApplication application)
+        {
+            return;
+        }
+
+        SavePriorities(_keyBindingSettings.PriorityApplicationIds
+            .Where(id => !string.Equals(id, application.Id, StringComparison.OrdinalIgnoreCase))
+            .ToList());
+    }
+
+    private void SavePriorities(IReadOnlyList<string> priorities)
+    {
+        _applyPriorityApplicationIds(priorities);
+        BindingStatusText.Foreground = System.Windows.Media.Brushes.ForestGreen;
+        BindingStatusText.Text = "Application priorities saved.";
     }
 
     private static string FormatApplicationName(string id) =>

@@ -35,5 +35,25 @@ public class StableAssignmentStoreTests
                 [1] = 0x7C, [2] = 0x7C, [3] = 0x7E, [4] = 0x7F, [5] = 0x80, [6] = 0x81
             }));
         }
+
+        public class PriorityAssignmentTests
+        {
+            [Fact]
+            public void PriorityApplicationsClaimTheFirstMacroSlots()
+            {
+                var store = new StableAssignmentStore();
+                var apps = new[]
+                {
+                    new MixerTarget(0, "a", "Alpha", 0.5f, false, false),
+                    new MixerTarget(0, "b", "Bravo", 0.5f, false, false),
+                    new MixerTarget(0, "c", "Charlie", 0.5f, false, false)
+                };
+
+                var assignments = store.Assign(apps, ["c", "a"]);
+
+                Assert.Equal("c", assignments.Single(target => target.Slot == 2).Id);
+                Assert.Equal("a", assignments.Single(target => target.Slot == 3).Id);
+            }
+        }
     }
 }

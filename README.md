@@ -33,6 +33,7 @@ The resulting installer is `artifacts\installer\VanguardVolume-Setup.exe`.
 3. Assign those same function keys to the physical macro keys in iCUE or Corsair Web Hub.
 4. Enable **Start Vanguard Volume automatically when I sign in** if it should survive reboots.
 5. Use **Ban selected application** to prevent an assigned app from being offered to macro keys. Use **Allow selected application** to restore it later.
+6. Add applications to **Assignment priority** when they should always claim the first available macro slots. Reorder the list to set their G2-G6 order.
 
 Settings are stored at `%LOCALAPPDATA%\VanguardVolume\settings.json` and apply immediately.
 
