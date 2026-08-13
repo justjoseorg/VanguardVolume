@@ -4,6 +4,10 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using MediaBrushes = System.Windows.Media.Brushes;
+using MediaColor = System.Windows.Media.Color;
+using MediaFontFamily = System.Windows.Media.FontFamily;
+using WpfImage = System.Windows.Controls.Image;
 
 namespace VanguardVolume.App;
 
@@ -26,11 +30,11 @@ public sealed class MixerFlyout : Window
         WindowStyle = WindowStyle.None;
         ResizeMode = ResizeMode.NoResize;
         SizeToContent = SizeToContent.Height;
-        Background = new SolidColorBrush(Color.FromRgb(23, 28, 38));
+        Background = new SolidColorBrush(MediaColor.FromRgb(23, 28, 38));
         Content = new Border
         {
             Padding = new Thickness(8),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(0, 174, 239)),
+            BorderBrush = new SolidColorBrush(MediaColor.FromRgb(0, 174, 239)),
             BorderThickness = new Thickness(1),
             Child = _rows
         };
@@ -76,12 +80,12 @@ public sealed class MixerFlyout : Window
                 Margin = new Thickness(0, 3, 0, 3),
                 Padding = new Thickness(10, 7, 10, 7),
                 CornerRadius = new CornerRadius(3),
-                Background = new SolidColorBrush(selected ? Color.FromRgb(0, 112, 160) : Color.FromRgb(48, 54, 67)),
+                Background = new SolidColorBrush(selected ? MediaColor.FromRgb(0, 112, 160) : MediaColor.FromRgb(48, 54, 67)),
                 Child = new DockPanel
                 {
                     Children =
                     {
-                        new Image
+                        new WpfImage
                         {
                             Source = ApplicationIconResolver.GetIcon(target),
                             Width = 24,
@@ -91,8 +95,8 @@ public sealed class MixerFlyout : Window
                         new TextBlock
                         {
                             VerticalAlignment = VerticalAlignment.Center,
-                            Foreground = Brushes.White,
-                            FontFamily = new FontFamily("Consolas"),
+                            Foreground = MediaBrushes.White,
+                            FontFamily = new MediaFontFamily("Consolas"),
                             Text = $"G{target.Slot}  {target.Name,-20} {(target.IsMuted ? "MUTE" : $"{target.VolumePercent}%")}"
                         }
                     }

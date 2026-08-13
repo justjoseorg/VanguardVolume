@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 
 namespace VanguardVolume.App;
@@ -10,6 +11,7 @@ public partial class App : System.Windows.Application
     private KeyBindingSettings? _keyBindingSettings;
     private MixerFlyout? _flyout;
     private MainWindow? _mainWindow;
+    private System.Windows.Forms.NotifyIcon? _trayIcon;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -24,16 +26,10 @@ public partial class App : System.Windows.Application
         _keyboardHook.Start();
 
         _flyout = new MixerFlyout(_controller);
+        _trayIcon = CreateTrayIcon();
         if (e.Args.Contains("--settings", StringComparer.OrdinalIgnoreCase))
         {
-            _mainWindow = new MainWindow(
-                _controller,
-                _keyBindingSettings,
-                ApplyMacroKeyMappings,
-                ApplyStartWithWindows,
-                ApplyBannedApplicationIds);
-            MainWindow = _mainWindow;
-            _mainWindow.Show();
+            ShowSettings();
         }
 
         _controller.Refresh();
@@ -42,6 +38,7 @@ public partial class App : System.Windows.Application
     protected override void OnExit(ExitEventArgs e)
     {
         _keyboardHook?.Dispose();
+        _trayIcon?.Dispose();
         _audio?.Dispose();
         base.OnExit(e);
     }
@@ -90,6 +87,44 @@ public partial class App : System.Windows.Application
         _keyBindingSettings!.BannedApplicationIds = new HashSet<string>(applicationIds, StringComparer.OrdinalIgnoreCase);
         _keyBindingSettings.Save();
         _controller!.SetBannedApplicationIds(_keyBindingSettings.BannedApplicationIds);
+    }
+
+    private void ShowSettings()
+    {
+        if (_mainWindow is null)
+        {
+            _mainWindow = new MainWindow(
+                _controller!,
+                _keyBindingSettings!,
+                ApplyMacroKeyMappings,
+                ApplyStartWithWindows,
+                ApplyBannedApplicationIds);
+            _mainWindow.Closed += (_, _) =>
+            {
+                _mainWindow = null;
+                MainWindow = null;
+            };
+            MainWindow = _mainWindow;
+        }
+
+        _mainWindow.Show();
+        _mainWindow.Activate();
+    }
+
+    private System.Windows.Forms.NotifyIcon CreateTrayIcon()
+    {
+        var menu = new System.Windows.Forms.ContextMenuStrip();
+        menu.Items.Add("Open settings", null, (_, _) => Dispatcher.Invoke(ShowSettings));
+        menu.Items.Add("Refresh audio sessions", null, (_, _) => Dispatcher.Invoke(() => _controller!.Refresh()));
+        menu.Items.Add("Exit", null, (_, _) => Dispatcher.Invoke(Shutdown));
+
+        return new System.Windows.Forms.NotifyIcon
+        {
+            Icon = new System.Drawing.Icon(Path.Combine(AppContext.BaseDirectory, "Assets", "vanguard-volume.ico")),
+            Text = "Vanguard Volume",
+            Visible = true,
+            ContextMenuStrip = menu
+        };
     }
 
 }
