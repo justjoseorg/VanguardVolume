@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="VanguardVolume.App/VanguardVolume.App.csproj" />
+  <Project Path="VanguardVolume.Tests/VanguardVolume.Tests.csproj" />
+</Solution>
