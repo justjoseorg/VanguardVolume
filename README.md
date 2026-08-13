@@ -16,6 +16,16 @@ dotnet run --project .\VanguardVolume.App
 
 Leave the app running in the notification area. Use its menu to refresh sessions, show the mapping window, or exit.
 
+## Install
+
+Build `artifacts\installer\VanguardVolume-Setup.exe` with:
+
+```powershell
+.\build-installer.ps1
+```
+
+The script requires [Inno Setup](https://jrsoftware.org/isinfo.php), installable with `winget install --id JRSoftware.InnoSetup --exact`. The installer is per-user, requires no administrator access, and starts the app in the notification area after installation. Enable **Start Vanguard Volume automatically when I sign in** from **Show mapping** to run it after future reboots.
+
 ## Configure macro bindings
 
 Open **Show mapping** from the notification-area icon, then select unique F13-F24 bindings for G1-G6 and choose **Save bindings**. Configure the same keys on the physical macro keys in iCUE or Corsair Web Hub. Bindings are saved in `%LOCALAPPDATA%\VanguardVolume\settings.json` and apply immediately.

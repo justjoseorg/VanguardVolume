@@ -13,6 +13,7 @@ public sealed class KeyBindingSettings
         "settings.json");
 
     public Dictionary<int, uint> MacroKeys { get; set; } = CreateDefaultMappings();
+    public bool StartWithWindows { get; set; }
 
     public static IReadOnlyList<MacroKeyOption> SupportedKeys { get; } =
         Enumerable.Range((int)FirstSupportedKey, (int)(LastSupportedKey - FirstSupportedKey + 1))

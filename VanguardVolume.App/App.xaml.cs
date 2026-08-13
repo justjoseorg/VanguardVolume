@@ -24,7 +24,7 @@ public partial class App : System.Windows.Application
         _keyboardHook.KeyPressed += OnGlobalKeyPressed;
         _keyboardHook.Start();
 
-        _mainWindow = new MainWindow(_controller, _keyBindingSettings, ApplyMacroKeyMappings);
+        _mainWindow = new MainWindow(_controller, _keyBindingSettings, ApplyMacroKeyMappings, ApplyStartWithWindows);
         MainWindow = _mainWindow;
         _trayIcon = CreateTrayIcon();
         _controller.Refresh();
@@ -67,6 +67,13 @@ public partial class App : System.Windows.Application
         _keyBindingSettings!.Update(macroKeys);
         _keyBindingSettings.Save();
         _keyboardHook!.UpdateMacroKeys(_keyBindingSettings.MacroKeys);
+    }
+
+    private void ApplyStartWithWindows(bool enabled)
+    {
+        AutostartService.SetEnabled(enabled);
+        _keyBindingSettings!.StartWithWindows = enabled;
+        _keyBindingSettings.Save();
     }
 
     private void OpenWindowsVolumeMixer()
