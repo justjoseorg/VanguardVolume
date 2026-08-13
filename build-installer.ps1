@@ -26,6 +26,8 @@ dotnet publish "$repositoryRoot\VanguardVolume.App\VanguardVolume.App.csproj" `
     --self-contained true `
     -p:PublishSingleFile=true `
     -p:PublishTrimmed=false `
+    -p:DebugSymbols=false `
+    -p:DebugType=None `
     -p:Version=$Version `
     --output $publishDirectory
 

@@ -17,6 +17,11 @@ Vanguard Volume is a Windows background companion for the Corsair VANGUARD 96. I
 
 Download `VanguardVolume-Setup.exe` from the latest GitHub release and run it. The per-user installer requires no administrator permissions, installs to `%LOCALAPPDATA%\Programs\VanguardVolume`, and launches the background companion.
 
+### Requirements
+
+- 64-bit Windows 10 or Windows 11
+- No separate .NET runtime, NAudio package, or Visual C++ redistributable installation
+
 To build an installer locally:
 
 ```powershell

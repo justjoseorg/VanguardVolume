@@ -18,7 +18,7 @@ OutputDir=..\artifacts\installer
 OutputBaseFilename=VanguardVolume-Setup
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-Compression=lzma2
+Compression=lzma2/ultra64
 SolidCompression=yes
 
 [Files]
