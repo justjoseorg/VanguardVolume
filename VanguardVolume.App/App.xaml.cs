@@ -75,7 +75,7 @@ public partial class App : System.Windows.Application
         scrollTimer.Tick += (_, _) =>
         {
             scrollTimer.Stop();
-            PressKey(0x22); // VK_NEXT scrolls the newly opened flyout to app volume controls.
+            VolumeMixerNavigator.ScrollToMixer();
         };
         scrollTimer.Start();
     }
