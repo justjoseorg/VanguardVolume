@@ -15,6 +15,7 @@ public partial class App : System.Windows.Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
         _audio = new AudioMixerService();
         _controller = new MixerController(_audio);
         _keyboardHook = new KeyboardHook();
