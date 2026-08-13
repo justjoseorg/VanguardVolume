@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 
 namespace VanguardVolume.App;
@@ -58,8 +58,20 @@ public partial class App : System.Windows.Application
         });
     }
 
-    private static void OpenWindowsVolumeMixer() =>
-        Process.Start(new ProcessStartInfo("ms-settings:apps-volume") { UseShellExecute = true });
+    private static void OpenWindowsVolumeMixer()
+    {
+        const byte vkControl = 0x11;
+        const byte vkLeftWindows = 0x5B;
+        const byte vkV = 0x56;
+        const uint keyUp = 0x0002;
+
+        keybd_event(vkLeftWindows, 0, 0, 0);
+        keybd_event(vkControl, 0, 0, 0);
+        keybd_event(vkV, 0, 0, 0);
+        keybd_event(vkV, 0, keyUp, 0);
+        keybd_event(vkControl, 0, keyUp, 0);
+        keybd_event(vkLeftWindows, 0, keyUp, 0);
+    }
 
     private System.Windows.Forms.NotifyIcon CreateTrayIcon()
     {
@@ -76,4 +88,7 @@ public partial class App : System.Windows.Application
             ContextMenuStrip = menu
         };
     }
+
+    [DllImport("user32.dll")]
+    private static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, nuint extraInfo);
 }
