@@ -43,6 +43,7 @@ public sealed class MixerFlyout : Window
         {
             _hideTimer.Stop();
             Hide();
+            _controller.ClearSelection();
         };
     }
 

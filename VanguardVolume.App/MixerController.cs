@@ -57,6 +57,17 @@ public sealed class MixerController
         StateChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    public void ClearSelection()
+    {
+        if (_selectedSlot is null)
+        {
+            return;
+        }
+
+        _selectedSlot = null;
+        StateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     public void AdjustSelectedVolume(float delta)
     {
         var target = GetSelectedTargetOrDefault();
