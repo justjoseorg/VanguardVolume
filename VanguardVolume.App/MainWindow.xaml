@@ -13,7 +13,7 @@
     <StackPanel Margin="24">
         <TextBlock FontSize="22" FontWeight="SemiBold" Text="Vanguard Volume"/>
         <TextBlock Margin="0,12,0,0" TextWrapping="Wrap"
-                   Text="Map the VANGUARD 96 G1-G6 keys in iCUE/Web Hub to the bindings below. The volume dial controls the selected row; press the dial to mute."/>
+                   Text="Map the VANGUARD 96 G1-G6 keys in iCUE/Web Hub to the bindings below. Until a macro key is pressed, the dial controls Windows volume normally. Afterwards, it controls the selected application; press the dial to mute."/>
         <TextBlock Margin="0,16,0,6" FontWeight="SemiBold" Text="Macro-key bindings"/>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -48,7 +48,7 @@
                 Content="Allow selected application"/>
         <TextBlock Margin="0,16,0,6" FontWeight="SemiBold" Text="Assignment priority"/>
         <TextBlock Foreground="DimGray" TextWrapping="Wrap"
-                   Text="Priority applications claim G2-G6 first, in the order shown. Unprioritized applications fill remaining slots."/>
+                   Text="Priority applications claim G1-G6 first, in the order shown. Unprioritized applications fill remaining slots."/>
         <ListBox x:Name="AvailableApplicationList" Height="82" Margin="0,6,0,0" DisplayMemberPath="Name"/>
         <Button Margin="0,6,0,0" HorizontalAlignment="Left" Padding="12,4" Click="PrioritizeSelectedApplication_Click"
                 Content="Prioritize selected application"/>

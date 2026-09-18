@@ -6,8 +6,7 @@ Vanguard Volume is a Windows background companion for the Corsair VANGUARD 96. I
 
 ## Features
 
-- **G1** controls the default output's master volume.
-- **G2-G6** receive stable assignments to up to five active or recently inactive shared-mode audio applications.
+- **G1-G6** receive stable assignments to up to six active or recently inactive shared-mode audio applications.
 - Sessions are collected across every active output device, so applications assigned to a dedicated headset or USB DAC remain available.
 - The dial adjusts the selected target; pressing it toggles mute.
 - Macro selection shows a custom non-activating mixer overlay in the bottom-right corner of the primary display.
@@ -54,4 +53,4 @@ Pushing a `v*` tag runs the release workflow, creates the self-contained x64 ins
 
 ## Constraints
 
-Corsair does not publish a supported live LCD/framebuffer API for the VANGUARD 96, so the app uses a desktop overlay rather than attempting unsupported HID or firmware writes. The low-level hook suppresses standard Windows media-volume events after routing them to the selected target, preventing the dial from also changing system volume. G1 is the deliberate exception: it selects master volume.
+Corsair does not publish a supported live LCD/framebuffer API for the VANGUARD 96, so the app uses a desktop overlay rather than attempting unsupported HID or firmware writes. Until a macro key selects an application, the dial retains normal Windows volume behavior. The low-level hook suppresses standard Windows media-volume events only while an application is selected, preventing the dial from also changing system volume.

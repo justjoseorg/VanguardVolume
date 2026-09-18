@@ -50,7 +50,7 @@ public partial class MainWindow : Window
     private void RefreshLists()
     {
         RefreshMapping();
-        AssignedApplicationList.ItemsSource = _controller.Assignments.Where(target => !target.IsMaster).ToList();
+        AssignedApplicationList.ItemsSource = _controller.Assignments;
         BannedApplicationList.ItemsSource = _keyBindingSettings.BannedApplicationIds
             .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
             .Select(id => new BannedApplication(id, FormatApplicationName(id)))

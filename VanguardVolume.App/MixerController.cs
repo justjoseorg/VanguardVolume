@@ -8,25 +8,25 @@ public sealed class MixerController
     private List<string> _priorityApplicationIds = [];
     private List<MixerTarget> _assignments = [];
     private List<MixerTarget> _availableApplications = [];
-    private int _selectedSlot = 1;
+    private int? _selectedSlot;
 
     public MixerController(AudioMixerService audio) => _audio = audio;
 
     public event EventHandler? StateChanged;
     public IReadOnlyList<MixerTarget> Assignments => _assignments;
     public IReadOnlyList<MixerTarget> AvailableApplications => _availableApplications;
-    public int SelectedSlot => _selectedSlot;
+    public int? SelectedSlot => _selectedSlot;
+    public bool HasSelectedTarget => _selectedSlot is not null && _assignments.Any(target => target.Slot == _selectedSlot);
 
     public void Refresh()
     {
-        var master = _audio.GetMasterTarget() with { Slot = 1 };
         _availableApplications = _audio.GetApplicationTargets()
             .Where(target => !_bannedApplicationIds.Contains(target.Id))
             .ToList();
-        _assignments = [master, .. _assignmentStore.Assign(_availableApplications, _priorityApplicationIds)];
-        if (!_assignments.Any(target => target.Slot == _selectedSlot))
+        _assignments = _assignmentStore.Assign(_availableApplications, _priorityApplicationIds).ToList();
+        if (!HasSelectedTarget)
         {
-            _selectedSlot = 1;
+            _selectedSlot = null;
         }
 
         StateChanged?.Invoke(this, EventArgs.Empty);
@@ -59,18 +59,28 @@ public sealed class MixerController
 
     public void AdjustSelectedVolume(float delta)
     {
-        var target = GetSelectedTarget();
+        var target = GetSelectedTargetOrDefault();
+        if (target is null)
+        {
+            return;
+        }
+
         _audio.SetVolume(target.Id, Math.Clamp(target.Volume + delta, 0f, 1f));
         Refresh();
     }
 
     public void ToggleSelectedMute()
     {
-        var target = GetSelectedTarget();
+        var target = GetSelectedTargetOrDefault();
+        if (target is null)
+        {
+            return;
+        }
+
         _audio.SetMute(target.Id, !target.IsMuted);
         Refresh();
     }
 
-    private MixerTarget GetSelectedTarget() =>
-        _assignments.FirstOrDefault(target => target.Slot == _selectedSlot) ?? _assignments.First(target => target.IsMaster);
+    private MixerTarget? GetSelectedTargetOrDefault() =>
+        _selectedSlot is null ? null : _assignments.FirstOrDefault(target => target.Slot == _selectedSlot);
 }

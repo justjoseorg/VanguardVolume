@@ -5,6 +5,7 @@ namespace VanguardVolume.App;
 
 public partial class App : System.Windows.Application
 {
+    private const string InstanceMutexName = @"Local\VanguardVolume.App";
     private AudioMixerService? _audio;
     private MixerController? _controller;
     private KeyboardHook? _keyboardHook;
@@ -12,9 +13,17 @@ public partial class App : System.Windows.Application
     private MixerFlyout? _flyout;
     private MainWindow? _mainWindow;
     private System.Windows.Forms.NotifyIcon? _trayIcon;
+    private SingleInstanceGuard? _instanceGuard;
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        _instanceGuard = SingleInstanceGuard.TryAcquire(InstanceMutexName);
+        if (_instanceGuard is null)
+        {
+            Shutdown();
+            return;
+        }
+
         base.OnStartup(e);
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         _audio = new AudioMixerService();
@@ -23,6 +32,7 @@ public partial class App : System.Windows.Application
         _controller.SetBannedApplicationIds(_keyBindingSettings.BannedApplicationIds);
         _controller.SetPriorityApplicationIds(_keyBindingSettings.PriorityApplicationIds);
         _keyboardHook = new KeyboardHook(_keyBindingSettings.MacroKeys);
+        _keyboardHook.ShouldHandleKey = key => key is >= GlobalKey.Macro1 and <= GlobalKey.Macro6 || _controller!.HasSelectedTarget;
         _keyboardHook.KeyPressed += OnGlobalKeyPressed;
         _keyboardHook.Start();
 
@@ -41,6 +51,7 @@ public partial class App : System.Windows.Application
         _keyboardHook?.Dispose();
         _trayIcon?.Dispose();
         _audio?.Dispose();
+        _instanceGuard?.Dispose();
         base.OnExit(e);
     }
 

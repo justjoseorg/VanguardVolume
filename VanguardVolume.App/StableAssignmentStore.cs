@@ -13,10 +13,10 @@ public sealed class StableAssignmentStore
         var priorities = (priorityIds ?? [])
             .Where(byId.ContainsKey)
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Take(5)
+            .Take(6)
             .ToList();
 
-        foreach (var slot in Enumerable.Range(2, priorities.Count))
+        foreach (var slot in Enumerable.Range(1, priorities.Count))
         {
             _idsBySlot.Remove(slot);
         }
@@ -29,7 +29,7 @@ public sealed class StableAssignmentStore
         }
         for (var index = 0; index < priorities.Count; index++)
         {
-            _idsBySlot[index + 2] = priorities[index];
+            _idsBySlot[index + 1] = priorities[index];
         }
 
         foreach (var stale in _idsBySlot.Where(pair => !byId.ContainsKey(pair.Value)).Select(pair => pair.Key).ToArray())
@@ -40,7 +40,7 @@ public sealed class StableAssignmentStore
         var unassigned = available
             .Where(target => !_idsBySlot.Values.Contains(target.Id, StringComparer.OrdinalIgnoreCase))
             .ToList();
-        for (var slot = 2; slot <= 6 && unassigned.Count > 0; slot++)
+        for (var slot = 1; slot <= 6 && unassigned.Count > 0; slot++)
         {
             if (_idsBySlot.ContainsKey(slot))
             {

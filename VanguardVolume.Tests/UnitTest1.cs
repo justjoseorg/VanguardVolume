@@ -5,22 +5,46 @@ namespace VanguardVolume.Tests;
 public class StableAssignmentStoreTests
 {
     [Fact]
+    public void SingleInstanceGuardAllowsOnlyOneOwnerForTheSameName()
+    {
+        var name = $@"Local\VanguardVolume.Tests.{Guid.NewGuid():N}";
+
+        using var first = SingleInstanceGuard.TryAcquire(name);
+        using var second = SingleInstanceGuard.TryAcquire(name);
+
+        Assert.NotNull(first);
+        Assert.Null(second);
+    }
+
+    [Fact]
+    public void SingleInstanceGuardAllowsAcquisitionAfterTheOwnerExits()
+    {
+        var name = $@"Local\VanguardVolume.Tests.{Guid.NewGuid():N}";
+        var first = SingleInstanceGuard.TryAcquire(name);
+
+        first!.Dispose();
+        using var second = SingleInstanceGuard.TryAcquire(name);
+
+        Assert.NotNull(second);
+    }
+
+    [Fact]
     public void ExistingApplicationsKeepTheirMacroKey()
     {
         var store = new StableAssignmentStore();
         var first = store.Assign([
-            new MixerTarget(0, "a", "Alpha", 0.5f, false, false),
-            new MixerTarget(0, "b", "Bravo", 0.5f, false, false)
+            new MixerTarget(0, "a", "Alpha", 0.5f, false),
+            new MixerTarget(0, "b", "Bravo", 0.5f, false)
         ]);
         var refreshed = store.Assign([
-            new MixerTarget(0, "b", "Bravo", 0.5f, false, false),
-            new MixerTarget(0, "a", "Alpha", 0.5f, false, false),
-            new MixerTarget(0, "c", "Charlie", 0.5f, false, false)
+            new MixerTarget(0, "b", "Bravo", 0.5f, false),
+            new MixerTarget(0, "a", "Alpha", 0.5f, false),
+            new MixerTarget(0, "c", "Charlie", 0.5f, false)
         ]);
 
         Assert.Equal(first.Single(target => target.Id == "a").Slot, refreshed.Single(target => target.Id == "a").Slot);
         Assert.Equal(first.Single(target => target.Id == "b").Slot, refreshed.Single(target => target.Id == "b").Slot);
-        Assert.Equal(4, refreshed.Single(target => target.Id == "c").Slot);
+        Assert.Equal(3, refreshed.Single(target => target.Id == "c").Slot);
     }
 
     public class KeyBindingSettingsTests
@@ -44,15 +68,15 @@ public class StableAssignmentStoreTests
                 var store = new StableAssignmentStore();
                 var apps = new[]
                 {
-                    new MixerTarget(0, "a", "Alpha", 0.5f, false, false),
-                    new MixerTarget(0, "b", "Bravo", 0.5f, false, false),
-                    new MixerTarget(0, "c", "Charlie", 0.5f, false, false)
+                    new MixerTarget(0, "a", "Alpha", 0.5f, false),
+                    new MixerTarget(0, "b", "Bravo", 0.5f, false),
+                    new MixerTarget(0, "c", "Charlie", 0.5f, false)
                 };
 
                 var assignments = store.Assign(apps, ["c", "a"]);
 
-                Assert.Equal("c", assignments.Single(target => target.Slot == 2).Id);
-                Assert.Equal("a", assignments.Single(target => target.Slot == 3).Id);
+                Assert.Equal("c", assignments.Single(target => target.Slot == 1).Id);
+                Assert.Equal("a", assignments.Single(target => target.Slot == 2).Id);
             }
 
             public class MuteDebouncerTests

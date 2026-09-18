@@ -28,6 +28,7 @@ public sealed class KeyboardHook : IDisposable
     }
 
     public event EventHandler<GlobalKey>? KeyPressed;
+    public Func<GlobalKey, bool>? ShouldHandleKey { get; set; }
 
     public void UpdateMacroKeys(IReadOnlyDictionary<int, uint> macroKeys)
     {
@@ -68,6 +69,11 @@ public sealed class KeyboardHook : IDisposable
             var virtualKey = (uint)Marshal.ReadInt32(lParam);
             if (TryMapKey(virtualKey, out var key))
             {
+                if (ShouldHandleKey?.Invoke(key) == false)
+                {
+                    return CallNextHookEx(_hook, code, wParam, lParam);
+                }
+
                 if (key == GlobalKey.VolumeMute && !_muteDebouncer.TryAccept())
                 {
                     return 1;

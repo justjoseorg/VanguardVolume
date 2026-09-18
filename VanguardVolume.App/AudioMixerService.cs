@@ -6,17 +6,8 @@ namespace VanguardVolume.App;
 
 public sealed class AudioMixerService : IDisposable
 {
-    private const string MasterId = "master";
     private readonly MMDeviceEnumerator _enumerator = new();
-    private MMDevice? _device;
     private Dictionary<string, List<SimpleAudioVolume>> _volumesById = new(StringComparer.OrdinalIgnoreCase);
-
-    public MixerTarget GetMasterTarget()
-    {
-        var device = GetDevice();
-        return new MixerTarget(1, MasterId, "Master", device.AudioEndpointVolume.MasterVolumeLevelScalar,
-            device.AudioEndpointVolume.Mute, true);
-    }
 
     public IReadOnlyList<MixerTarget> GetApplicationTargets()
     {
@@ -53,18 +44,12 @@ public sealed class AudioMixerService : IDisposable
         {
             var volumes = pair.Value.Volumes;
             return new MixerTarget(0, pair.Key, pair.Value.Name, volumes.Average(volume => volume.Volume),
-                volumes.All(volume => volume.Mute), false);
+                volumes.All(volume => volume.Mute));
         }).OrderBy(target => target.Name, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
     public void SetVolume(string id, float volume)
     {
-        if (id == MasterId)
-        {
-            GetDevice().AudioEndpointVolume.MasterVolumeLevelScalar = volume;
-            return;
-        }
-
         foreach (var sessionVolume in GetVolumes(id))
         {
             sessionVolume.Volume = volume;
@@ -73,12 +58,6 @@ public sealed class AudioMixerService : IDisposable
 
     public void SetMute(string id, bool mute)
     {
-        if (id == MasterId)
-        {
-            GetDevice().AudioEndpointVolume.Mute = mute;
-            return;
-        }
-
         foreach (var sessionVolume in GetVolumes(id))
         {
             sessionVolume.Mute = mute;
@@ -87,14 +66,7 @@ public sealed class AudioMixerService : IDisposable
 
     public void Dispose()
     {
-        _device?.Dispose();
         _enumerator.Dispose();
-    }
-
-    private MMDevice GetDevice()
-    {
-        _device ??= _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
-        return _device;
     }
 
     private IReadOnlyList<SimpleAudioVolume> GetVolumes(string id) =>
