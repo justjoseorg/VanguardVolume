@@ -93,7 +93,7 @@ public sealed class AudioMixerService : IDisposable
 
     private MMDevice GetDevice()
     {
-        _device ??= _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+        _device ??= _enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
         return _device;
     }
 
